@@ -1,0 +1,11 @@
+@model Category
+
+<div class="container">
+    <div class="col">
+        <form asp-action="Create" asp-controller="Category" method="POST">
+            <label asp-for="Name"></label>
+            <input asp-for="Name">
+            <button>Create</button>
+        </form>
+    </div>
+</div>

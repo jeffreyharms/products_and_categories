@@ -1,0 +1,15 @@
+@model Product
+
+<div class="container">
+    <div class="col">
+        <form asp-action="Create" asp-controller="Product" method="POST">
+            <label asp-for="Name"></label>
+            <input asp-for="Name">
+            <label asp-for="Description"></label>
+            <input asp-for="Description">
+            <label asp-for="Price"></label>
+            <input asp-for="Price">
+            <button>Create</button>
+        </form>
+    </div>
+</div>
