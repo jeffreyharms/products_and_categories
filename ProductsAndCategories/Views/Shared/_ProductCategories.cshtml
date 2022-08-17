@@ -1,2 +1,10 @@
 @model Category
 
+<div class="container">
+    <ul>
+        @foreach (Category cat in ViewBag.Cats)
+        {
+            <li>@cat.Name</li>
+        }
+    </ul>
+</div>

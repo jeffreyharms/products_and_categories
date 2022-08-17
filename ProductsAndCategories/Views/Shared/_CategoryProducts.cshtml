@@ -1,0 +1,10 @@
+@model Product
+
+<div class="container">
+    <ul>
+        @foreach (Product prod in ViewBag.Prods)
+        {
+            <li>@prod.Name</li>
+        }
+    </ul>
+</div>

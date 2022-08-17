@@ -1,2 +1,13 @@
 @model Category
 
+<div class="container">
+    <form asp-action="AddCats">
+        <select name="Categories">
+            @foreach (Category cat in ViewBag.UnrelatedCats)
+            {
+                <option value="@cat">@cat.Name</option>
+            }
+        </select>
+        <button>Add</button>
+    </form>
+</div>

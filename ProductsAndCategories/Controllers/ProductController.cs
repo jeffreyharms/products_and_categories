@@ -19,15 +19,23 @@ public class ProductController : Controller
         return View("AllProducts");
     }
     [HttpGet("/products/{ProductId}")]
-    public IActionResult ViewProduct(int ProductId)
+    public IActionResult ViewProduct(int productId)
     {
-        Product? product = _context.Products.FirstOrDefault(product => product.ProductId == ProductId);
+        Product? product = _context.Products.FirstOrDefault(product => product.ProductId == productId);
         if (product == null)
         {
             return RedirectToAction("All");
         }
 
-        ViewBag.Categories = _context.Categories;
+        ViewBag.Cats = _context.Categories
+            .Include(Prod => Prod.Associations)
+                .ThenInclude(assoc => assoc.Product)
+            .Where(Product => Product.Associations.Any(p => p.ProductId == productId))
+            .ToList();
+
+        ViewBag.UnrelatedCats = _context.Categories
+        .Include(c => c.Associations)
+        .Where(c => !c.Associations.Any(p => p.ProductId == productId));
 
         return View("OneProduct", product);
     }
