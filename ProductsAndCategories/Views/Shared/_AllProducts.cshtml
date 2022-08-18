@@ -1,9 +1,7 @@
-@model List<Product>
-
 
 <div class="container">
     <ul>
-        @foreach (Product Product in Model)
+        @foreach (Product Product in @ViewBag.AllProducts)
         {
             <a href="/products/@Product.ProductId">@Product.Name</a>
         }

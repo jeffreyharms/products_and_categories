@@ -15,27 +15,27 @@ public class CategoryController : Controller
     [HttpGet("/categories")]
     public IActionResult All()
     {
-        List<Category> AllCategories = _context.Categories.ToList();
+        ViewBag.AllCategories = _context.Categories.ToList();
         return View("AllCategories");
     }
     [HttpGet("/categories/{CategoryId}")]
     public IActionResult ViewCategory(int categoryId)
     {
-        Category? category = _context.Categories.FirstOrDefault(cat => cat.CategoryId == categoryId);
+
+    Category? category = _context.Categories
+        .Include(f => f.Associations)
+        .ThenInclude(assoc => assoc.Product)
+        .FirstOrDefault(category => category.CategoryId == categoryId);
         if (category == null)
         {
             return RedirectToAction("All");
         }
 
-        ViewBag.Prods = _context.Products
-            .Include(cat => cat.Associations)
-                .ThenInclude(assoc => assoc.Category)
-            .Where(Category => Category.Associations.Any(p => p.CategoryId == categoryId))
-            .ToList();
-
-        ViewBag.UnrelatedCats = _context.Categories
+        ViewBag.UnrelatedProds = _context.Products
         .Include(c => c.Associations)
-        .Where(c => !c.Associations.Any(p => p.CategoryId == categoryId));
+        .ThenInclude(a => a.Category)
+        .Where(c => !c.Associations
+        .Any(p => p.CategoryId == categoryId));
 
         return View("OneCategory", category);
     }
@@ -54,6 +54,17 @@ public class CategoryController : Controller
         _context.Categories.Add(newCategory);
         _context.SaveChanges();
         return RedirectToAction("All");
+    }
+    [HttpPost("/categories/{categoryId}/add")]
+    public IActionResult AddProds(Association newAssoc, int categoryId)
+    {
+        if (ModelState.IsValid == false)
+        {
+            return RedirectToAction("All");
+        }
+        _context.Associations.Add(newAssoc);
+        _context.SaveChanges();
+        return RedirectToAction("ViewCategory", new {categoryId = categoryId});
     }
 }
 

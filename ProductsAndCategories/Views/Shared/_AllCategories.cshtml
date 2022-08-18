@@ -1,11 +1,9 @@
-@model List<Category>
-
 
 <div class="container">
     <ul>
-        @foreach (Category Category in Model)
+        @foreach (Category cat in ViewBag.AllCategories)
         {
-            <a href="/categories/@Category.CategoryId">@Category.Name</a>
+            <a href="/categories/@cat.CategoryId">@cat.Name</a>
         }
     </ul>
 </div>

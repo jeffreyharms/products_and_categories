@@ -15,27 +15,28 @@ public class ProductController : Controller
     [HttpGet("/products")]
     public IActionResult All()
     {
-        List<Product> AllProducts = _context.Products.ToList();
+        ViewBag.AllProducts = _context.Products.ToList();
         return View("AllProducts");
     }
     [HttpGet("/products/{ProductId}")]
     public IActionResult ViewProduct(int productId)
     {
-        Product? product = _context.Products.FirstOrDefault(product => product.ProductId == productId);
+        Product? product = _context.Products
+        .Include(f => f.Associations)
+        .ThenInclude(assoc => assoc.Category)
+        .FirstOrDefault(product => product.ProductId == productId);
+
         if (product == null)
         {
             return RedirectToAction("All");
         }
 
-        ViewBag.Cats = _context.Categories
-            .Include(Prod => Prod.Associations)
-                .ThenInclude(assoc => assoc.Product)
-            .Where(Product => Product.Associations.Any(p => p.ProductId == productId))
-            .ToList();
-
         ViewBag.UnrelatedCats = _context.Categories
-        .Include(c => c.Associations)
-        .Where(c => !c.Associations.Any(p => p.ProductId == productId));
+        .Include(p => p.Associations)
+        .ThenInclude(a => a.Product)
+        .Where(c => !c.Associations
+        .Any(p => p.ProductId == productId));
+
 
         return View("OneProduct", product);
     }
@@ -54,6 +55,17 @@ public class ProductController : Controller
         _context.Products.Add(newProduct);
         _context.SaveChanges();
         return RedirectToAction("All");
+    }
+    [HttpPost("/products/{productId}/add")]
+    public IActionResult AddCats(Association newAssoc, int productId)
+    {
+        if (ModelState.IsValid == false)
+        {
+            return RedirectToAction("All");
+        }
+        _context.Associations.Add(newAssoc);
+        _context.SaveChanges();
+        return RedirectToAction("ViewProduct", new {productId = productId});
     }
 }
 

@@ -5,10 +5,27 @@
 <div class="container">
     <div class="row">
         <div class="col">
-            <partial name="_CategoryProducts"></partial>
+            <div class="container">
+                <ul>
+                    @foreach (Association a in Model.Associations)
+                    {
+                        <li>@a.Product.Name</li>
+                    }
+                </ul>
+            </div>
         </div>
         <div class="col">
-            <partial name="_AddProducts"></partial>
+            <div class="container">
+                <form asp-action="AddProds" asp-route-categoryId=@Model.CategoryId>
+                    <select name="ProductId">
+                        @foreach (Product Product in ViewBag.UnrelatedProds)
+                        {
+                            <option value="@Product.ProductId">@Product.Name</option>
+                        }
+                    </select>
+                    <button>Add</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>
